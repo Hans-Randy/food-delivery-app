@@ -2,16 +2,17 @@ import "./Footer.css";
 import { assets } from "../../assets/assets";
 
 const Footer = () => {
+  const currentYear = new Date().getFullYear();
   return (
     <div className="footer" id="footer">
       <div className="footer-content">
         <div className="footer-content-left">
           <img src={assets.logo} alt="" />
           <p>
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s, when an unknown printer took a galley of type
-            and scrambled it to make a type specimen book.
+            Thank you for choosing us for your dining needs. We are committed to
+            providing you with exceptional service and delicious meals. Stay
+            connected with us through our social media channels for the latest
+            updates and special offers.
           </p>
           <div className="footer-social-icons">
             <img src={assets.facebook_icon} alt="" />
@@ -31,14 +32,14 @@ const Footer = () => {
         <div className="footer-content-right">
           <h2>GET IN TOUCH</h2>
           <ul>
-            <li>+1-212-456-7890</li>
+            <li>+1-647-808-7843</li>
             <li>contact@food-delivery.com</li>
           </ul>
         </div>
       </div>
       <hr />
       <p className="footer-copyright">
-        Copyright 2025 © Food-delivery.com - All Right Reserved.
+        Copyright {currentYear} © Food-delivery.com - All Right Reserved.
       </p>
     </div>
   );
