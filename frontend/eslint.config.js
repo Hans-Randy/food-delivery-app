@@ -35,6 +35,7 @@ export default [
       ],
       "react/prop-types": ["warn"],
       "react/no-unescaped-entities": ["warn"],
+      "no-unused-vars": ["warn"],
     },
   },
 ];

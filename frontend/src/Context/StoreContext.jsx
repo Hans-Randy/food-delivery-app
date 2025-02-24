@@ -5,10 +5,10 @@ import axios from "axios";
 export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
-  const url = import.meta.env.VITE_BACKEND_URL;
   const [food_list, setFoodList] = useState([]);
   const [cartItems, setCartItems] = useState({});
   const [token, setToken] = useState("");
+  const url = import.meta.env.VITE_BACKEND_URL;
   const currency = import.meta.env.VITE_CURRENCY;
   const deliveryCharge = import.meta.env.VITE_DELIVERY_CHARGE;
 

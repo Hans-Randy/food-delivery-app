@@ -1,28 +1,37 @@
 import foodModel from "../models/foodModel.js";
-import fs from "fs";
+import { gridFSBucket } from "../config/db.js";
 
 // all food list
 const listFood = async (req, res) => {
   try {
-    const foods = await foodModel.find({});
+    let foods = await foodModel.find({});
+
+    foods = await Promise.all(
+      foods.map(async (food) => {
+        const image = await getImageData(food.imageId);
+        return {
+          ...food.toObject(),
+          image,
+        };
+      })
+    );
+
     res.json({ success: true, data: foods });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: "Error" });
+    console.error(error);
+    res.status(500).json({ success: false, message: "Error" });
   }
 };
 
 // add food
 const addFood = async (req, res) => {
   try {
-    let image_filename = `${req.file.filename}`;
-
     const food = new foodModel({
       name: req.body.name,
       description: req.body.description,
       price: req.body.price,
       category: req.body.category,
-      image: image_filename,
+      imageId: req.file.id,
     });
 
     await food.save();
@@ -37,14 +46,45 @@ const addFood = async (req, res) => {
 const removeFood = async (req, res) => {
   try {
     const food = await foodModel.findById(req.body.id);
-    fs.unlink(`uploads/${food.image}`, () => {});
-
     await foodModel.findByIdAndDelete(req.body.id);
+    await gridFSBucket.delete(food.imageId);
     res.json({ success: true, message: "Food Removed" });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: "Error" });
   }
+};
+
+// Helper function to get image data from GridFS
+const getImageData = async (imageId) => {
+  const images = await gridFSBucket.find({ _id: imageId }).toArray();
+  const image = images[0];
+
+  if (!image) {
+    throw new Error("Image not found");
+  }
+
+  const base64File = await new Promise((resolve, reject) => {
+    let fileData = Buffer.from([]);
+    const downloadStream = gridFSBucket.openDownloadStream(image._id);
+    downloadStream.on("data", (chunk) => {
+      fileData = Buffer.concat([fileData, chunk]);
+    });
+    downloadStream.on("end", () => {
+      resolve(fileData.toString("base64"));
+    });
+    downloadStream.on("error", (err) => {
+      reject(err);
+    });
+  });
+
+  return {
+    filename: image.filename,
+    contentType: image.contentType,
+    length: image.length,
+    uploadDate: image.uploadDate,
+    data: base64File,
+  };
 };
 
 export { listFood, addFood, removeFood };

@@ -41,14 +41,13 @@ const PlaceOrder = () => {
 
   const placeOrder = async (e) => {
     e.preventDefault();
-    let orderItems = [];
-    food_list.map((item) => {
-      if (cartItems[item._id] > 0) {
-        let itemInfo = item;
-        itemInfo["quantity"] = cartItems[item._id];
-        orderItems.push(itemInfo);
-      }
-    });
+    let orderItems = food_list
+      .filter((item) => cartItems[item._id] > 0)
+      .map((item) => {
+        const { image, ...itemInfo } = item;
+        return { ...itemInfo, quantity: cartItems[item._id] };
+      });
+
     let orderData = {
       address: data,
       items: orderItems,
@@ -65,6 +64,7 @@ const PlaceOrder = () => {
         toast.error("Something Went Wrong");
       }
     } else {
+      console.log(orderData);
       let response = await axios.post(url + "/api/order/placecod", orderData, {
         headers: { token },
       });

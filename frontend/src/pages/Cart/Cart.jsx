@@ -9,7 +9,6 @@ const Cart = () => {
     food_list,
     removeFromCart,
     getTotalCartAmount,
-    url,
     currency,
     deliveryCharge,
   } = useContext(StoreContext);
@@ -29,7 +28,10 @@ const Cart = () => {
             return (
               <div key={index}>
                 <div className="cart-items-title cart-items-item">
-                  <img src={url + "/images/" + item.image} alt="" />
+                  <img
+                    src={`data:${item.image.contentType};base64,${item.image.data}`}
+                    alt=""
+                  />
                   <p>{item.name}</p>
                   <p>
                     {currency}
